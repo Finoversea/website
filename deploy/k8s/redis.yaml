@@ -1,0 +1,72 @@
+# FinOversea Redis Deployment (Standalone)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis
+  namespace: finoversea
+  labels:
+    app: finoversea
+    component: redis
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: finoversea
+      component: redis
+  template:
+    metadata:
+      labels:
+        app: finoversea
+        component: redis
+    spec:
+      containers:
+        - name: redis
+          image: redis:7-alpine
+          ports:
+            - containerPort: 6379
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 200m
+              memory: 128Mi
+          livenessProbe:
+            exec:
+              command:
+                - redis-cli
+                - ping
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          readinessProbe:
+            exec:
+              command:
+                - redis-cli
+                - ping
+            initialDelaySeconds: 2
+            periodSeconds: 5
+          volumeMounts:
+            - name: redis-data
+              mountPath: /data
+      volumes:
+        - name: redis-data
+          emptyDir: {}
+---
+# Redis Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-service
+  namespace: finoversea
+  labels:
+    app: finoversea
+    component: redis
+spec:
+  type: ClusterIP
+  selector:
+    app: finoversea
+    component: redis
+  ports:
+    - name: redis
+      port: 6379
+      targetPort: 6379

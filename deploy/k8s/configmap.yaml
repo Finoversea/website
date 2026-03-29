@@ -1,0 +1,36 @@
+# FinOversea ConfigMap
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: finoversea-config
+  namespace: finoversea
+  labels:
+    app: finoversea
+data:
+  # Application settings
+  APP_NAME: "FinOversea"
+  APP_VERSION: "1.0.0"
+  DEBUG: "false"
+
+  # Database (URL without credentials - use secret for auth)
+  # DATABASE_URL format: postgresql+asyncpg://user:pass@host:port/db
+  # Override via Secret for credentials
+
+  # Redis
+  REDIS_URL: "redis://redis-service:6379/0"
+
+  # LLM Configuration
+  OPENAI_BASE_URL: "https://api.openai.com/v1"
+  LLM_MODEL: "gpt-4o-mini"
+
+  # Collector settings
+  COLLECTOR_USER_AGENT: "FinOversea/1.0 (舆情采集)"
+  COLLECTOR_TIMEOUT: "30"
+  COLLECTOR_MAX_CONCURRENT: "10"
+
+  # Push settings
+  PUSH_BATCH_SIZE: "100"
+  PUSH_RETRY_COUNT: "3"
+
+  # Tagging settings
+  TAG_CONFIDENCE_THRESHOLD: "0.7"

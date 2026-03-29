@@ -1,0 +1,69 @@
+# FinOversea Backend Ingress
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: finoversea-backend
+  namespace: finoversea
+  labels:
+    app: finoversea
+    component: backend
+  annotations:
+    # NGINX Ingress Controller annotations
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: "10m"
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "60"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "60"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "60"
+    nginx.ingress.kubernetes.io/rate-limit: "100"
+    nginx.ingress.kubernetes.io/rate-limit-window: "1m"
+    # Cert-manager annotations (if using)
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - api.finoversea.example.com
+      secretName: finoversea-tls
+  rules:
+    - host: api.finoversea.example.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: finoversea-backend
+                port:
+                  number: 80
+---
+# Alternative: API path under main domain
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: finoversea-api-path
+  namespace: finoversea
+  labels:
+    app: finoversea
+    component: backend
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: "10m"
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - finoversea.example.com
+      secretName: finoversea-tls
+  rules:
+    - host: finoversea.example.com
+      http:
+        paths:
+          - path: /api(/|$)(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: finoversea-backend
+                port:
+                  number: 80
