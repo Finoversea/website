@@ -70,8 +70,17 @@ finoversea/
 │   ├── tests/
 │   ├── scripts/
 │   └── requirements.txt
+├── admin/                       # 管理端 (Next.js)
+│   ├── src/
+│   │   ├── app/                # 页面
+│   │   ├── components/         # UI组件
+│   │   ├── lib/                # 工具库
+│   │   └── types/              # 类型定义
+│   └── package.json
+├── deploy/
 ├── docs/
 ├── config/
+├── docker-compose.yml
 └── README.md
 ```
 
@@ -109,6 +118,16 @@ uvicorn app.api:app --reload --port 8000
 ### API文档
 
 启动后访问: http://localhost:8000/docs
+
+### 管理端
+
+```bash
+cd admin
+npm install
+npm run dev
+```
+
+访问: http://localhost:3000
 
 ## API 端点
 
