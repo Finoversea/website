@@ -1,0 +1,52 @@
+# FinOversea Namespace
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: finoversea
+  labels:
+    name: finoversea
+    environment: production
+---
+# Service Account for Backend
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: finoversea-backend
+  namespace: finoversea
+  labels:
+    app: finoversea
+---
+# RBAC - Role
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: finoversea-backend-role
+  namespace: finoversea
+  labels:
+    app: finoversea
+rules:
+  # Read configs and secrets
+  - apiGroups: [""]
+    resources: ["configmaps", "secrets"]
+    verbs: ["get", "list"]
+  # Health check and monitoring
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["get", "list"]
+---
+# RBAC - RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: finoversea-backend-rolebinding
+  namespace: finoversea
+  labels:
+    app: finoversea
+subjects:
+  - kind: ServiceAccount
+    name: finoversea-backend
+    namespace: finoversea
+roleRef:
+  kind: Role
+  name: finoversea-backend-role
+  apiGroup: rbac.authorization.k8s.io

@@ -1,0 +1,40 @@
+# FinOversea Backend Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: finoversea-backend
+  namespace: finoversea
+  labels:
+    app: finoversea
+    component: backend
+spec:
+  type: ClusterIP
+  selector:
+    app: finoversea
+    component: backend
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+      protocol: TCP
+---
+# FinOversea Backend Headless Service (for direct pod access)
+apiVersion: v1
+kind: Service
+metadata:
+  name: finoversea-backend-headless
+  namespace: finoversea
+  labels:
+    app: finoversea
+    component: backend
+spec:
+  type: ClusterIP
+  clusterIP: None
+  selector:
+    app: finoversea
+    component: backend
+  ports:
+    - name: http
+      port: 8000
+      targetPort: http
+      protocol: TCP
